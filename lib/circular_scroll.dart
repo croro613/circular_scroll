@@ -3,12 +3,19 @@ library circular_scroll;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// A Calculator.
+/// A widget that scrolls the list in a circular motion.
 class CircularScroll extends StatefulWidget {
+  /// You need to assign the same ScrollController to the child widget.
   final ScrollController scrollController;
   final Widget child;
-  CircularScroll(
-      {super.key, required this.scrollController, required this.child});
+  final Widget? button;
+  final Widget? tracker;
+  const CircularScroll(
+      {super.key,
+      required this.scrollController,
+      required this.child,
+      this.button,
+      this.tracker});
   @override
   State<StatefulWidget> createState() {
     return _CircularScrollState();
@@ -89,47 +96,50 @@ class _CircularScrollState extends State<CircularScroll> {
                   // 真ん中
                   left: MediaQuery.of(context).size.width / 2 - 25,
                   bottom: 50,
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black.withOpacity(0.2),
-                      boxShadow: [
-                        BoxShadow(
+                  child: widget.button ??
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
                           color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 2,
-                          blurRadius: 3,
-                          offset: Offset(0, 1), // changes position of shadow
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 3,
+                              offset:
+                                  Offset(0, 1), // changes position of shadow
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
                 ),
             ],
           ),
         ),
         if (isOnPan)
-          Positioned(
-            left: _position.dx - 35,
-            top: _position.dy - 140,
-            child: Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black.withOpacity(0.1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 3,
-                    offset: Offset(0, 1), // changes position of shadow
+          widget.tracker ??
+              Positioned(
+                left: _position.dx,
+                top: _position.dy,
+                child: Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black.withOpacity(0.1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 3,
+                        offset: Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
       ],
     );
   }
