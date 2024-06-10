@@ -5,17 +5,29 @@ import 'package:flutter/services.dart';
 
 /// A widget that scrolls the list in a circular motion.
 class CircularScroll extends StatefulWidget {
-  /// You need to assign the same ScrollController to the child widget.
+
+  /// assign the same ScrollController to the child widget.
   final ScrollController scrollController;
+
+  /// The widget below this widget in the tree.
   final Widget child;
+
+  /// If the button argument is null, the CircularScroll will use [DefaultButton].
   final Widget? button;
+
+  /// If the tracker argument is null, the CircularScroll will use [DefaultTracker].
   final Widget? tracker;
+
+  /// If the isProvideHapticFeedBack is true, The widget provide HapticFeedBack in a circular motion.
+  /// [HapticFeedback.selectionClick()] is provided.
+  final bool isProvideHapticFeedback;
   const CircularScroll(
       {super.key,
       required this.scrollController,
       required this.child,
       this.button,
-      this.tracker});
+      this.tracker,
+      this.isProvideHapticFeedback = false});
   @override
   State<StatefulWidget> createState() {
     return _CircularScrollState();
@@ -77,7 +89,7 @@ class _CircularScrollState extends State<CircularScroll> {
                 );
                 _origin = _start;
                 _start = end;
-                _provideHapticFeedback();
+
               } else if (angle < -5) {
                 // print('left');
                 _origin = _start;
@@ -85,8 +97,11 @@ class _CircularScrollState extends State<CircularScroll> {
                 widget.scrollController.position.moveTo(
                   widget.scrollController.offset - 25,
                 );
-                _provideHapticFeedback();
+
+              } else {
+                return;
               }
+              if (widget.isProvideHapticFeedback) _provideHapticFeedback();
             }
           },
           child: Stack(
@@ -97,23 +112,7 @@ class _CircularScrollState extends State<CircularScroll> {
                   left: MediaQuery.of(context).size.width / 2 - 25,
                   bottom: 50,
                   child: widget.button ??
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black.withOpacity(0.2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              spreadRadius: 2,
-                              blurRadius: 3,
-                              offset:
-                                  Offset(0, 1), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                      ),
+                      const DefaultButton(),
                 ),
             ],
           ),
@@ -123,24 +122,62 @@ class _CircularScrollState extends State<CircularScroll> {
               Positioned(
                 left: _position.dx,
                 top: _position.dy,
-                child: Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 3,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                ),
+                child: const DefaultTracker(),
               ),
       ],
+    );
+  }
+}
+
+class DefaultTracker extends StatelessWidget {
+  const DefaultTracker({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.black.withOpacity(0.1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 3,
+            offset: Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DefaultButton extends StatelessWidget {
+  const DefaultButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.black.withOpacity(0.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 3,
+            offset:
+                Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
     );
   }
 }
@@ -163,19 +200,5 @@ double crossProduct(Offset oa, Offset ob, Offset oc) {
 }
 
 void _provideHapticFeedback() {
-  // HapticFeedback.vibrate();
-  // 他のタイプのフィードバック
-  // HapticFeedback.lightImpact();
-  // HapticFeedback.mediumImpact();
-  // HapticFeedback.heavyImpact();
   HapticFeedback.selectionClick();
 }
-
-// class test extends StatelessWidget{
-//   @override
-//   Widget build(BuildContext context) {
-//     // TODO: implement build
-//     throw Scrollbar(child: child);
-//   }
-//
-// }
